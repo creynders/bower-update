@@ -8,9 +8,12 @@
 
 var chalk = require('chalk');
 var bower = require('bower');
+var bowerJson  = require('bower-json');
 var _ = require('lodash');
 var async = require('async');
 var readlineSync = require('readline-sync');
+var fs = require('fs');
+var path = require('path');
 
 module.exports = function(options, allDone) {
 
@@ -66,9 +69,37 @@ module.exports = function(options, allDone) {
 		return true;
 	};
 
-	async.waterfall([
+	var saveDependencies = function(updates, done){
+		if(updates.length){
+			async.waterfall([
+				_.partial(bowerJson.find, bowerConfig.cwd),
+				bowerJson.read,
+				function(json, filename, done){
+					_.each(updates, function(updated){
+						json.dependencies[updated.name] = "~"+updated.now;
+					});
+					done(null, json, filename);
+				},
+				function(transformed, filename, done){
+					fs.writeFile(filename, JSON.stringify(transformed, null, 2), done);
+				}
+			], function(err){
+				done(err, updates);
+			});
+		}else{
+			done(null, updates);
+		}
+	};
+
+	var tasks = [
 		getComponents,
 		updateComponents
-	], allDone);
+	];
+
+	if(options.save){
+		tasks.push(saveDependencies);
+	}
+
+	async.waterfall(tasks, allDone);
 
 };

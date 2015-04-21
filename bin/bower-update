@@ -26,6 +26,12 @@ var opts = nomnom
 		flag: true,
 		help: 'Ask before updating every component.'
 	})
+	.option('save', {
+		abbr: 'S',
+		flag: true,
+		default: false,
+		help: 'Store updated dependencies to bower.json'
+	})
 	.parse();
 
 
@@ -40,7 +46,8 @@ function showVersion() {
 function main() {
 	updater({
 		cwd: process.cwd(),
-		interactive: !opts.interactive
+		interactive: !opts.interactive,
+		save: !!opts.save
 	}, function (err, updated) {
 		if (err) {
 			console.log(chalk.red.underline(err));

@@ -19,7 +19,7 @@ npm install -g bower-update
 Just `cd` to your project’s root folder (where your `bower.json` is located) and run:
 
 ```
-bower-update [--non-interactive]
+bower-update [--non-interactive] [--save]
 ```
 
 ### Options
@@ -27,6 +27,10 @@ bower-update [--non-interactive]
 #### non-interactive
 
 bower-update will not ask you before updating any components.
+
+#### save
+
+Updated dependencies will be stored to `bower.json`.
 
 
 ## Changelog
